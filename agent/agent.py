@@ -1,30 +1,34 @@
+import os
+
+import dotenv
+from langchain.agents import create_agent
+from langchain_groq import ChatGroq
+from langgraph.checkpoint.memory import InMemorySaver
+
 from config.config import MODEL_NAME
 from config.logger import get_logger
-from langchain_groq import ChatGroq
-from langchain.agents import create_agent
-from langgraph.checkpoint.memory import InMemorySaver
-import os
-import dotenv
 
-
+dotenv.load_dotenv()
 logger = get_logger("agent")
 
 class ReactAgent:
     
     def __init__(self, tools, model_name=MODEL_NAME):
-        
-        
+                
         try:
             
-            dotenv.load_dotenv()
-            GROQ_API = os.getenv("groq_api")
-        
             
+            GROQ_API = os.getenv("groq_api")
+            
+            if not GROQ_API:
+                raise ValueError("GROQ_API_KEY is missing from environment")
+                
             if not model_name:
                 raise ValueError("model name is missing")
             
-            
-            
+            if not tools:
+                raise ValueError("tools list is missing or empty")
+     
             self.llm = ChatGroq(
                 model=model_name,
                 temperature=0.5,
@@ -43,13 +47,7 @@ class ReactAgent:
             )
             
             logger.info("react agent initiated")
-            
-            
-            
-            
-            
-            
-        
+         
         except ValueError as e:
             logger.error(f"Value error: {e}")
             raise
