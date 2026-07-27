@@ -61,3 +61,39 @@ class ReactAgent:
         except Exception as e:
             logger.error(f"Error in react agent: {e}")
             raise
+        
+    
+    def get_response (self, query):
+        
+        try:
+            
+            if not query:
+                raise ValueError("query cannot be empty")
+            
+            response = self.react_agent.ainvoke({
+                "messages": [
+                    {
+                        'role':'system',
+                        "context": "You are a smart, useful agent with tools to access code library documentation and the Met Museum collection."
+                        
+                    },
+                    
+                    {
+                        "role":"user",
+                        "context": query
+                    }
+                ],
+                
+            }, config=self.config)
+            
+            logger.info("response is fetched")
+            return response
+              
+            
+        except ValueError as e:
+            logger.error(f"Value error: {e}")
+            raise
+                        
+        except Exception as e:
+            logger.error(f"Error in react agent: {e}")
+            raise
