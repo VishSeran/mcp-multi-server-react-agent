@@ -48,7 +48,12 @@ class ReactAgent:
             self.react_agent = create_agent(
                 model=self.llm,
                 tools=tools,
-                checkpointer=checkpointer
+                checkpointer=checkpointer,
+                system_prompt=(
+                    "You are a smart and useful agent. "
+                    "You have tools to access code library documentation "
+                    "and the Metropolitan Museum collection."
+                )
             )
             
             logger.info("react agent initiated")
@@ -62,31 +67,26 @@ class ReactAgent:
             raise
         
     
-    def get_response (self, query):
+    async def get_response (self, query):
         
         try:
             
             if not query:
                 raise ValueError("query cannot be empty")
             
-            response = self.react_agent.ainvoke({
+            response = await self.react_agent.ainvoke({
                 "messages": [
-                    {
-                        'role':'system',
-                        "context": "You are a smart, useful agent with tools to access code library documentation and the Met Museum collection."
-                        
-                    },
                     
                     {
                         "role":"user",
-                        "context": query
+                        "content": query
                     }
                 ],
                 
             }, config=self.config)
             
             logger.info("response is fetched")
-            return response
+            return response['messages'][-1].content
               
             
         except ValueError as e:
