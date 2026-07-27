@@ -17,7 +17,6 @@ class ReactAgent:
                 
         try:
             
-            
             GROQ_API = os.getenv("groq_api")
             
             if not GROQ_API:
@@ -40,10 +39,21 @@ class ReactAgent:
             # This allows the agent to remember previous messages in the conversation
             checkpointer = InMemorySaver()
             
+            self.config = {
+                "configurable": {
+                    "thread_id": "conversational_id"
+                }
+            }
+            
             self.react_agent = create_agent(
                 model=self.llm,
                 tools=tools,
-                checkpointer=checkpointer
+                checkpointer=checkpointer,
+                system_prompt=(
+                    "You are a smart and useful agent. "
+                    "You have tools to access code library documentation "
+                    "and the Metropolitan Museum collection."
+                )
             )
             
             logger.info("react agent initiated")
@@ -52,6 +62,37 @@ class ReactAgent:
             logger.error(f"Value error: {e}")
             raise
         
+        except Exception as e:
+            logger.error(f"Error in react agent: {e}")
+            raise
+        
+    
+    async def get_response (self, query):
+        
+        try:
+            
+            if not query:
+                raise ValueError("query cannot be empty")
+            
+            response = await self.react_agent.ainvoke({
+                "messages": [
+                    
+                    {
+                        "role":"user",
+                        "content": query
+                    }
+                ],
+                
+            }, config=self.config)
+            
+            logger.info("response is fetched")
+            return response['messages'][-1].content
+              
+            
+        except ValueError as e:
+            logger.error(f"Value error: {e}")
+            raise
+                        
         except Exception as e:
             logger.error(f"Error in react agent: {e}")
             raise
