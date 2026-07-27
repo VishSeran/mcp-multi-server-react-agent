@@ -34,11 +34,11 @@ class MCPServerClient:
             logger.error(f"Error in react agent: {e}")
             raise
         
-    def get_tools(self):
+    async def get_tools(self):
         
         try:
             
-            tools = self.mcp_client.get_tools()
+            tools = await self.mcp_client.get_tools()
             return tools
             
         except ValueError as e:

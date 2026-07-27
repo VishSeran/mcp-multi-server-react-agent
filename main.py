@@ -1,6 +1,6 @@
 from config.logger import get_logger
 from agent.agent import ReactAgent
-from mcp.mcp_client_server import MCPServerClient
+from mcp_client.mcp_client_server import MCPServerClient
 import asyncio
 
 logger = get_logger("main")
@@ -12,7 +12,7 @@ async def main():
         mcp_client = MCPServerClient()
         logger.info("Mcp client initialized")
         
-        mcp_tools = mcp_client.get_tools()
+        mcp_tools = await mcp_client.get_tools()
         react_agent = ReactAgent(tools=mcp_tools)
         logger.info("React agent initialized")
         
@@ -36,9 +36,12 @@ async def main():
                 response = await react_agent.get_response(query)
                 print("Response: ", response)
                 
-            else:
+            if choice == "2":
                 print("Goodbye")
                 break
+            
+            else:
+                print("Invalid input, please insert valid input")
                 
     except ValueError as e:
         logger.error(f"Value error: {e}")
@@ -47,3 +50,8 @@ async def main():
     except Exception as e:
         logger.error(f"Error in react agent: {e}")
         raise    
+    
+
+if __name__ == "__main__":
+    
+    asyncio.run(main())
