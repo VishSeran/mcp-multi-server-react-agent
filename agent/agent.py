@@ -17,7 +17,6 @@ class ReactAgent:
                 
         try:
             
-            
             GROQ_API = os.getenv("groq_api")
             
             if not GROQ_API:
