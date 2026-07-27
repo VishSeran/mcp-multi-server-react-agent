@@ -1,5 +1,4 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
-
 from config.logger import get_logger
 
 
@@ -11,7 +10,7 @@ class MCPServerClient:
         
         try:
             
-            self.mcp_server = MultiServerMCPClient(
+            self.mcp_client = MultiServerMCPClient(
                 {
                     "context7": {
                         "url": "https://mcp.context7.com/mcp",
@@ -25,6 +24,7 @@ class MCPServerClient:
                     }
                 }
             )
+            logger.info("mcp client has created")
  
         except ValueError as e:
             logger.error(f"Value error: {e}")
@@ -32,4 +32,19 @@ class MCPServerClient:
                 
         except Exception as e:
             logger.error(f"Error in react agent: {e}")
+            raise
+        
+    def get_tools(self):
+        
+        try:
+            
+            tools = self.mcp_client.get_tools()
+            return tools
+            
+        except ValueError as e:
+                    logger.error(f"Value error: {e}")
+                    raise
+                        
+        except Exception as e:
+            logger.error(f"Error in get tools: {e}")
             raise

@@ -40,6 +40,12 @@ class ReactAgent:
             # This allows the agent to remember previous messages in the conversation
             checkpointer = InMemorySaver()
             
+            self.config = {
+                "configurable": {
+                    "thread_id": "conversational_id"
+                }
+            }
+            
             self.react_agent = create_agent(
                 model=self.llm,
                 tools=tools,
